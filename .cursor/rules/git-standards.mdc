@@ -1,0 +1,28 @@
+---
+description: Standards for Git commits, branch management, and GitHub PRs.
+alwaysApply: true
+---
+
+# Git & GitHub Standards
+
+## Commit Messages
+- **Format:** Use Conventional Commits (e.g., `feat:`, `fix:`, `docs:`, `refactor:`, `chore:`).
+- **Style:** Concise, imperative mood ("add feature" not "added feature").
+- **Content:** Briefly explain the "why" if the "what" isn't obvious.
+
+## Workflow
+- **Status Check:** Always run `git status` and `git diff` before committing.
+- **Branching:** Work on feature branches (`feat/feature-name`) and merge into `main` via PRs.
+- **Pull Requests:** Use `gh pr create` for creating PRs with a clear title and description.
+
+## Automation & Shortcuts
+- If asked to "commit and push", the AI should:
+  1. Check status and diff.
+  2. Draft a conventional commit message.
+  3. Commit and push to the current branch.
+- Use the `Makefile` for common tasks if available.
+
+## Rules for AI
+- Never update git config.
+- Never force push unless explicitly requested.
+- Avoid `git commit --amend` unless specifically asked.

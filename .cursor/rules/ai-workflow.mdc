@@ -1,0 +1,37 @@
+---
+description: Rules for LangGraph orchestration, MCP tools, and LLM interactions.
+globs: "app/workflows/**/*.py,mcp/**/*.py,app/services/**/*_service.py"
+alwaysApply: false
+---
+
+# AI Workflow & Orchestration
+
+## LangGraph Rules
+- Use LangGraph for orchestration and workflow execution.
+- Nodes should be deterministic and composable.
+- Use shared workflow state via `TypedDict` or Pydantic models.
+- Prefer conditional routing over deeply nested conditionals.
+- Nodes: `fetch_email_node`, `prefilter_email_node`, `classify_email_node`, `extract_entities_node`, `summarize_node`, `notify_node`.
+
+## MCP Rules
+- Use MCP as the standardized tool interface layer.
+- Tools should be reusable, return structured outputs, and be independently testable.
+- **DO NOT** place workflow orchestration logic inside MCP tools.
+- Tools: `fetch_emails`, `prefilter_email`, `classify_email`, `extract_entities`, `summarize_email`, `send_google_chat_notification`.
+
+## LLM & Prompting
+- **Structured Output:** LLM outputs MUST return validated JSON.
+- **Prompts:** Concise, deterministic, and focused on classification/extraction.
+- **Inference:** Use low-temperature inference. Avoid unnecessary chain-of-thought.
+- **Efficiency:** Use a hybrid architecture. Rule-based prefiltering first, LLM second.
+
+## Email Intelligence Pipeline
+1. `fetch_email`
+2. `prefilter_email` (Rule-based: detect newsletters, marketing, spam)
+3. If likely useful: `classify_email` (Categories: INTERVIEW, ASSESSMENT, OFFER, etc.)
+4. If action required: `extract_entities` -> `summarize_email` -> `send_notification`
+
+## Categories & Notifications
+- **Notify for:** INTERVIEW, ASSESSMENT, OFFER, RECRUITER_OUTREACH, APPLICATION_UPDATE, FOLLOW_UP.
+- **Ignore:** JOB_MARKETING, NEWSLETTER, SPAM, IGNORE.
+- Notifications must be concise, actionable, and structured (Company, Role, Date, Urgency, Summary).

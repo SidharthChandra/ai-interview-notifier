@@ -1,0 +1,48 @@
+---
+description: Core engineering principles and project structure for the AI career inbox intelligence platform.
+alwaysApply: true
+---
+
+# Core Project Standards
+
+You are a senior AI/backend infrastructure engineer building a production-style AI workflow and inbox intelligence platform.
+
+## Tech Stack
+- **Backend:** FastAPI, LangGraph, LangChain, MCP
+- **Processing:** Redis + Celery
+- **AI/ML:** OpenAI API, LangSmith (observability)
+- **Integrations:** Gmail API, Google Chat Webhooks
+- **Infrastructure:** Docker, Render
+
+## Project Structure
+Always follow this structure:
+- `app/`: Main application logic
+  - `api/`: FastAPI routes
+  - `services/`: Business logic (e.g., `gmail_service.py`, `notifier_service.py`)
+  - `workflows/`: LangGraph orchestration (`langgraph_flow.py`)
+  - `workers/`: Celery tasks
+  - `core/`: Configuration and core utilities
+- `mcp/`: MCP server and tools
+  - `server.py`
+  - `tools/`: Individual MCP tools (e.g., `gmail_tool.py`)
+- `infra/`: Infrastructure configs
+- `tests/`: Unit and integration tests
+
+## Engineering Principles
+- **Production Quality:** Write modular, strongly typed (Pydantic), and validated code.
+- **Separation of Concerns:** Separate orchestration (LangGraph) from integrations (MCP/Services).
+- **Async First:** Use async patterns where appropriate.
+- **Security:** Never hardcode secrets. Use environment variables and OAuth2 for Gmail.
+- **Readability:** Prefer readability over cleverness. Keep functions small and composable.
+
+## Code Quality
+- Use type hints everywhere.
+- Use Pydantic for data validation.
+- Write docstrings for important functions.
+- Centralize configuration in `app/core/`.
+- Avoid monolithic files and duplicated logic.
+
+## Documentation & Memory
+- **Memory Management:** Always update `MEMORY.md` after significant changes or milestone completions to track project state and roadmap progress.
+- **README Updates:** Ensure `README.md` is updated if architectural decisions, tech stack, or setup instructions change.
+- **Keep it Current:** Documentation should reflect the latest state of the codebase.

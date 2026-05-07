@@ -1,0 +1,32 @@
+---
+description: Infrastructure rules for Celery, Redis, Gmail API, and Deployment.
+globs: "app/workers/**/*.py,app/api/**/*.py,infra/**/*,Dockerfile,docker-compose.yml"
+alwaysApply: false
+---
+
+# Backend Infrastructure
+
+## Celery & Redis
+- **Celery:** Use for Gmail polling, async processing, retries, and scheduled workflows.
+- **Redis:** Use as Celery broker/backend, for deduplication, and lightweight caching.
+- **Non-blocking:** Avoid blocking API routes with long-running tasks.
+
+## Gmail Integration
+- Use Gmail API with OAuth2.
+- **Security:** Never log raw sensitive email content or expose credentials.
+- **Sync:** Prefer unread email polling and incremental sync patterns.
+
+## Logging & Observability
+- Use structured logging.
+- **LangSmith:** Trace LangGraph execution, LLM calls, node transitions, and failures.
+- Log important events: email fetched, prefilter result, classification result, notification sent.
+
+## Docker & Deployment
+- Target: Render.
+- All services must be Docker-compatible.
+- Provide `Dockerfile` and `docker-compose.yml`.
+- Services (API, Worker, Redis) should be independently deployable and environment-driven.
+
+## Testing
+- Generate unit-testable modules and mockable integrations.
+- Use dependency injection and interface-driven design.

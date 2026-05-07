@@ -24,6 +24,12 @@ This file tracks the current state, progress, and architectural decisions of the
     - `app/workers/tasks.py` updated with `poll_gmail` logic and Redis checkpointing.
     - Celery Beat configured for 5-minute polling.
     - `docker-compose.yml` updated with `beat` service.
+    - LangGraph workflow implemented for AI-driven classification, extraction, and summarization.
+    - AI inference switched from OpenAI to Groq for high-speed processing.
+    - `requirements.txt` corrected with compatible `0.x` series for LangChain and LangGraph to fix build errors.
+    - `app/workflows/` structure created with state, nodes, and graph definition.
+    - `poll_gmail` task updated to use LangGraph orchestration.
+    - Fault tolerance implemented with `RetryPolicy` and `MemorySaver` checkpointing in LangGraph.
 
 ## 🏗 Architectural Decisions
 - **Orchestration:** LangGraph for workflow state management and routing.
@@ -34,8 +40,8 @@ This file tracks the current state, progress, and architectural decisions of the
 ## 📅 Roadmap
 - [ ] Initialize FastAPI application structure.
 - [ ] Set up MCP server and basic Gmail tools.
-- [ ] Implement LangGraph orchestration flow.
-- [ ] Configure Celery workers and Redis.
+- [x] Implement LangGraph orchestration flow.
+- [x] Configure Celery workers and Redis.
 - [x] Integrate Telegram notification bot.
 - [ ] Set up LangSmith for observability.
 

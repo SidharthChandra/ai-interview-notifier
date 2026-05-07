@@ -17,7 +17,13 @@ This file tracks the current state, progress, and architectural decisions of the
     - `app/core/celery_app.py` and `app/workers/tasks.py` created.
     - Infrastructure verified (Redis + Celery + Flower).
     - Initial test scripts cleaned up.
-    - `.env.example` created.
+    - `.env.example` updated with Google and Notifier settings.
+    - `app/services/gmail_service.py` implemented (OAuth2 + Fetch).
+    - `app/services/prefilter_service.py` implemented (Keyword-based).
+    - `app/services/notifier_service.py` implemented (Telegram Bot API).
+    - `app/workers/tasks.py` updated with `poll_gmail` logic and Redis checkpointing.
+    - Celery Beat configured for 5-minute polling.
+    - `docker-compose.yml` updated with `beat` service.
 
 ## 🏗 Architectural Decisions
 - **Orchestration:** LangGraph for workflow state management and routing.
@@ -30,7 +36,7 @@ This file tracks the current state, progress, and architectural decisions of the
 - [ ] Set up MCP server and basic Gmail tools.
 - [ ] Implement LangGraph orchestration flow.
 - [ ] Configure Celery workers and Redis.
-- [ ] Integrate Google Chat notification webhooks.
+- [x] Integrate Telegram notification bot.
 - [ ] Set up LangSmith for observability.
 
 ## 📝 Notes

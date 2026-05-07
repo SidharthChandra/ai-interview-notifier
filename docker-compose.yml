@@ -23,6 +23,21 @@ services:
       - redis
     restart: always
 
+  beat:
+    build: .
+    container_name: ai_career_beat
+    command: celery -A app.core.celery_app beat --loglevel=info
+    volumes:
+      - .:/app
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - redis
+      - worker
+    restart: always
+
   flower:
     build: .
     container_name: ai_career_flower

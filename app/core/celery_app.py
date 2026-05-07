@@ -19,3 +19,11 @@ celery_app.conf.update(
 
 # Auto-discover tasks from app.workers.tasks
 celery_app.autodiscover_tasks(["app.workers"])
+
+# Configure Celery Beat Schedule
+celery_app.conf.beat_schedule = {
+    "poll-gmail-every-5-minutes": {
+        "task": "app.workers.tasks.poll_gmail",
+        "schedule": 300.0,  # 5 minutes in seconds
+    },
+}

@@ -1,11 +1,9 @@
-import asyncio
 from datetime import datetime, timedelta, timezone
 import redis
 from app.core.celery_app import celery_app
 from app.core.config import settings
 from app.services.gmail_service import gmail_service
-from app.services.prefilter_service import prefilter_service
-from app.services.notifier_service import notifier_service
+from app.workflows.langgraph_flow import app_workflow
 from loguru import logger
 
 # Initialize Redis client for checkpointing
@@ -14,10 +12,9 @@ redis_client = redis.from_url(settings.REDIS_URL)
 @celery_app.task(name="app.workers.tasks.poll_gmail")
 def poll_gmail():
     """
-    Poll Gmail for new emails, filter for interview-related content,
-    and send notifications to Google Chat.
+    Poll Gmail for new emails and process them through the LangGraph workflow.
     """
-    logger.info("Starting Gmail poll cycle...")
+    logger.info("Starting Gmail poll cycle (LangGraph Edition)...")
     
     # 1. Get last poll timestamp from Redis
     last_poll_key = "last_poll_timestamp"
@@ -36,7 +33,6 @@ def poll_gmail():
     logger.info(f"Found {len(messages)} new messages to process.")
     
     processed_count = 0
-    match_count = 0
     
     # 3. Process each email
     for msg in messages:
@@ -54,11 +50,22 @@ def poll_gmail():
             
         processed_count += 1
         
-        # 4. Filter for interview-related content
-        if prefilter_service.is_interview_related(email_data):
-            match_count += 1
-            # 5. Send notification (run async in sync task)
-            asyncio.run(notifier_service.send_notification(email_data))
+        # 4. Run LangGraph Workflow
+        logger.info(f"Invoking LangGraph for email: {msg_id}")
+        try:
+            # Use thread_id for checkpointing (unique per email)
+            config = {"configurable": {"thread_id": msg_id}}
+            
+            app_workflow.invoke({
+                "email_data": email_data,
+                "is_useful": False,
+                "category": None,
+                "entities": None,
+                "summary": None,
+                "notification_sent": False
+            }, config=config)
+        except Exception as e:
+            logger.error(f"LangGraph workflow failed for email {msg_id}: {e}")
             
         # Mark as processed in Redis (expire after 24 hours)
         redis_client.setex(dedup_key, timedelta(hours=24), "1")
@@ -66,5 +73,5 @@ def poll_gmail():
     # 6. Update last poll timestamp in Redis
     redis_client.set(last_poll_key, datetime.now(timezone.utc).isoformat())
     
-    logger.success(f"Poll cycle complete. Processed: {processed_count}, Matches: {match_count}")
-    return f"Processed {processed_count} emails, sent {match_count} notifications."
+    logger.success(f"Poll cycle complete. Processed: {processed_count}")
+    return f"Processed {processed_count} emails through LangGraph."

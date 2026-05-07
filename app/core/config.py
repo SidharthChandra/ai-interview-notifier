@@ -11,6 +11,12 @@ class Settings(BaseSettings):
     CELERY_BROKER_URL: str | None = None
     CELERY_RESULT_BACKEND: str | None = None
     
+    # OpenAI
+    OPENAI_API_KEY: str = "your_openai_api_key"
+    
+    # Groq
+    GROQ_API_KEY: str = "your_groq_api_key"
+    
     # Google OAuth2
     GOOGLE_CLIENT_ID: str = "your_client_id"
     GOOGLE_CLIENT_SECRET: str = "your_client_secret"

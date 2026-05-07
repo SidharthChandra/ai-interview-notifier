@@ -3,15 +3,21 @@
 This file tracks the current state, progress, and architectural decisions of the AI Career Inbox Intelligence platform.
 
 ## 🚀 Current Status
-- **Phase:** Initial Setup & Architecture Definition
+- **Phase:** Initial Setup & Infrastructure Testing
 - **Completed:**
     - Project structure defined and folders created.
-    - Core Cursor rules established (`core-standards`, `ai-workflow`, `backend-infra`).
+    - Core Cursor rules established (`core-standards`, `ai-workflow`, `backend-infra`, `git-standards`).
     - `.cursorignore` and `.gitignore` configured.
     - `MEMORY.md` initialized.
-    - `requirements.txt` added with specific, compatible versions (2026 stable releases).
-    - `git-standards.mdc` rule added for Git/GitHub best practices.
+    - `requirements.txt` added with specific, compatible versions (fixed loguru version and updated others to latest stable 2026 releases).
     - `Makefile` created for easy CLI commands.
+    - `docker-compose.yml` created for local Redis and Celery setup.
+    - `Dockerfile` added for application services.
+    - `app/core/config.py` updated with Celery settings.
+    - `app/core/celery_app.py` and `app/workers/tasks.py` created.
+    - Infrastructure verified (Redis + Celery + Flower).
+    - Initial test scripts cleaned up.
+    - `.env.example` created.
 
 ## 🏗 Architectural Decisions
 - **Orchestration:** LangGraph for workflow state management and routing.

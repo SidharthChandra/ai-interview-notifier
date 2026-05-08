@@ -54,7 +54,15 @@ def poll_gmail():
         logger.info(f"Invoking LangGraph for email: {msg_id}")
         try:
             # Use thread_id for checkpointing (unique per email)
-            config = {"configurable": {"thread_id": msg_id}}
+            # Add metadata for LangSmith tracing
+            config = {
+                "configurable": {"thread_id": msg_id},
+                "metadata": {
+                    "email_id": msg_id,
+                    "subject": email_data.get("subject"),
+                    "sender": email_data.get("from")
+                }
+            }
             
             app_workflow.invoke({
                 "email_data": email_data,

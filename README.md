@@ -1,6 +1,6 @@
 # AI Career Inbox Intelligence & Notification System
 
-An AI-powered career workflow automation platform that monitors your Gmail inbox, intelligently identifies high-value career opportunities, and orchestrates notifications and workflows using LangGraph and MCP.
+An AI-powered career workflow automation platform that monitors your Gmail inbox, intelligently identifies high-value career opportunities, and orchestrates notifications and workflows using LangGraph.
 
 ## 🚀 Overview
 
@@ -9,48 +9,56 @@ This platform is more than a simple keyword alert bot; it's a production-grade i
 *   **Filter** low-value job marketing, spam, and newsletters using a hybrid AI approach.
 *   **Detect** critical career events: interview invitations, coding assessments, offers, and recruiter outreach.
 *   **Orchestrate** complex workflows using **LangGraph**.
-*   **Expose** modular capabilities through the **Model Context Protocol (MCP)**.
-*   **Notify** via Google Chat webhooks with structured, actionable summaries.
+*   **Notify** via Telegram with structured, actionable summaries.
 
 ## 🛠 Tech Stack
 
 *   **Backend:** FastAPI
 *   **Orchestration:** LangGraph, LangChain
-*   **Tooling:** MCP (Model Context Protocol)
 *   **Async Processing:** Redis + Celery
-*   **AI Models:** OpenAI API
-*   **Integrations:** Gmail API, Google Chat Webhooks
+*   **AI Models:** Groq (Llama 3.3 70B)
+*   **Integrations:** Gmail API, Telegram Bot API
 *   **Observability:** LangSmith (Tracing & Monitoring)
-*   **Infrastructure:** Docker, Render
+*   **Infrastructure:** Docker
 
 ## 🏗 Architecture
 
 The system follows a modular, event-driven architecture:
 
-```text
-Celery Worker (Polling)
-↓
-LangGraph Orchestrator (Workflow Logic)
-↓
-MCP Tool Layer (Reusable Capabilities)
-├── Gmail Tool
-├── Prefilter Tool
-├── Classification Tool
-├── Extraction Tool
-├── Summary Tool
-└── Notification Tool
-↓
-External Services (Gmail, Google Chat, OpenAI)
+```mermaid
+graph TD
+    A[Gmail Inbox] -->|Poll| B(Celery Worker)
+    B -->|Invoke| C{LangGraph Workflow}
+    
+    subgraph Workflow [LangGraph Orchestrator]
+        C --> D[Prefilter Node]
+        D -->|Useful?| E{Classify Node}
+        E -->|Actionable?| F[Extract Node]
+        F --> G[Summarize Node]
+        G --> H[Notify Node]
+        
+        D -.->|No| END1[End]
+        E -.->|No| END2[End]
+    end
+    
+    H -->|Send| I[Telegram Bot]
+    
+    subgraph External [External Services]
+        E --- J[Groq API]
+        F --- J
+        G --- J
+        C --- K[LangSmith Tracing]
+    end
 ```
 
 ### Inbox Intelligence Pipeline
 
 1.  **Fetch:** Polls Gmail for unread messages.
 2.  **Prefilter:** Lightweight rule-based filtering (sender analysis, headers) to minimize LLM costs.
-3.  **Classify:** LLM-based categorization (INTERVIEW, OFFER, REJECTION, etc.).
+3.  **Classify:** LLM-based categorization using Groq (INTERVIEW, OFFER, REJECTION, etc.).
 4.  **Extract:** Structured entity extraction (Company, Role, Date, Urgency).
 5.  **Summarize:** Generates a concise, actionable summary.
-6.  **Notify:** Sends a structured notification to Google Chat.
+6.  **Notify:** Sends a structured notification to Telegram.
 
 ## 📂 Project Structure
 
@@ -58,13 +66,9 @@ External Services (Gmail, Google Chat, OpenAI)
 app/
 ├── api/          # FastAPI routes
 ├── services/     # Business logic (Gmail, Notifier, Prefilter)
-├── workflows/    # LangGraph orchestration logic
+├── workflows/    # LangGraph orchestration logic (Nodes, State, Flow)
 ├── workers/      # Celery tasks & scheduled jobs
-└── core/         # Config, security, and shared utilities
-
-mcp/
-├── server.py     # MCP Server entry point
-└── tools/        # Modular MCP tool implementations
+└── core/         # Config, settings, and shared utilities
 
 infra/            # Docker & deployment configurations
 tests/            # Unit and integration tests
@@ -77,7 +81,8 @@ tests/            # Unit and integration tests
 *   Docker & Docker Compose
 *   Redis
 *   Google Cloud Console Project (with Gmail API enabled)
-*   OpenAI API Key
+*   Groq API Key
+*   Telegram Bot Token & Chat ID
 
 ### Installation
 
@@ -104,6 +109,7 @@ All AI workflows and LLM calls are traced using **LangSmith**. This provides:
 *   Full visibility into LangGraph node transitions.
 *   Detailed breakdown of LLM token usage and latency.
 *   Debugging for classification and extraction failures.
+*   Metadata-based trace searching (by email ID, subject, etc.).
 
 ## 🛡 Security
 
